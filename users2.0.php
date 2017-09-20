@@ -18,9 +18,9 @@ require NV_ROOTDIR . '/includes/mainfile.php';
 $prefix2 = "prefix_nkv2";
 $user_prefix2 = "prefix_nkv2";
 
-$db->query( "DELETE FROM `nv4_users` WHERE `userid`>2" );
-$db->query( "DELETE FROM `nv4_users_info` WHERE `userid`>2" );
-$db->query( "DELETE FROM `nv4_authors` WHERE `admin_id`>2" );
+$db->query( "DELETE FROM `nv4_users`" );
+$db->query( "DELETE FROM `nv4_users_info`" );
+$db->query( "DELETE FROM `nv4_authors`" );
 
 try
 {
