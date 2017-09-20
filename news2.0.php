@@ -39,28 +39,6 @@ if( $step == 1 )
 		$db->query( "TRUNCATE TABLE `" . NV_PREFIXLANG . "_news_tags`" );
 		$db->query( "TRUNCATE TABLE `" . NV_PREFIXLANG . "_news_tags_id`" );
 
-		try
-		{
-			$db->query( "TRUNCATE `nv4_vi_news_bodytext`" );
-		}
-		catch( PDOException $e )
-		{
-			//
-		}
-
-		for( $i = 1; $i < 10; $i++ )
-		{
-
-			try
-			{
-				$db->query( "TRUNCATE `nv4_vi_news_bodyhtml_" . $i . "`" );
-			}
-			catch( PDOException $e )
-			{
-				//
-			}
-		}
-
 		nv_news_add_cat(); // Insert table _cat
 		$nextstep++;
 	}
@@ -381,10 +359,6 @@ function nv_news_add_content()
 		try
 		{
 			$db->query( $sql );
-
-			$tbhtml = NV_PREFIXLANG . '_news_bodyhtml_' . ceil( $rowcontent['sid'] / 2000 );
-			$db->query( "CREATE TABLE IF NOT EXISTS " . $tbhtml . " (id int(11) unsigned NOT NULL, bodyhtml longtext NOT NULL, sourcetext varchar(255) NOT NULL default '', imgposition tinyint(1) NOT NULL default '1', copyright tinyint(1) NOT NULL default '0', allowed_send tinyint(1) NOT NULL default '0', allowed_print tinyint(1) NOT NULL default '0', allowed_save tinyint(1) NOT NULL default '0', gid mediumint(9) NOT NULL DEFAULT '0', PRIMARY KEY (id)) ENGINE=MyISAM" );
-
 			$rowcontent['bodyhtml'] = mb_convert_encoding( $rowcontent['bodytext'], 'windows-1252', 'UTF-8' );
 			$rowcontent['sourcetext'] = mb_convert_encoding( $rowcontent['source'], 'windows-1252', 'UTF-8' );
 
@@ -424,23 +398,20 @@ function nv_news_add_content()
 			$rowcontent['allowed_print'] = 1;
 			$rowcontent['allowed_save'] = 1;
 			$rowcontent['gid'] = 0;
-			$stmt = $db->prepare( 'INSERT INTO ' . $tbhtml . ' VALUES
-					(' . $rowcontent['sid'] . ',
-					 :bodyhtml,
-					 :sourcetext,
-					 ' . $rowcontent['imgposition'] . ',
-					 ' . $rowcontent['copyright'] . ',
-					 ' . $rowcontent['allowed_send'] . ',
-					 ' . $rowcontent['allowed_print'] . ',
-					 ' . $rowcontent['allowed_save'] . ',
-					 ' . $rowcontent['gid'] . '
-					 )' );
-			$stmt->bindParam( ':bodyhtml', $rowcontent['bodyhtml'], PDO::PARAM_STR, strlen( $rowcontent['bodyhtml'] ) );
-			$stmt->bindParam( ':sourcetext', $rowcontent['sourcetext'], PDO::PARAM_STR, strlen( $rowcontent['sourcetext'] ) );
-			$stmt->execute();
 
-			$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_news_bodytext VALUES (' . $rowcontent['sid'] . ', :bodytext )' );
-			$stmt->bindParam( ':bodytext', $bodytext, PDO::PARAM_STR, strlen( $rowcontent['bodytext'] ) );
+			$stmt = $db->prepare('INSERT INTO ' . NV_PREFIXLANG . '_news_detail (`id`, `titlesite`, `description`, `bodyhtml`, `sourcetext`, `imgposition`, `copyright`, `allowed_send`, `allowed_print`, `allowed_save`, `gid`) VALUES
+					(' . $rowcontent['sid'] . ',
+					' . $db->quote($rowcontent['post_title']) . ',
+					 ' . $db->quote(nv_clean60($hometext, 200, true)) . ',
+					 ' . $db->quote($rowcontent['bodyhtml']) . ',
+					 ' . $db->quote($rowcontent['hometext']) . ',
+					 1,
+					 1,
+					 1,
+					 1,
+					 1,
+					 0
+					 )');
 			$stmt->execute();
 
 		}
