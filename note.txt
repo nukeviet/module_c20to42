@@ -1,0 +1,13 @@
+Hướng dẫn cập nhật dữ liệu cho site giáo phận vinh:
+
+- Upload file backup, giải nén trên hosting.
+
+cd /home/giaophanvinh/backup/backup-12.21.2015_20-55-57_giaophan/mysql/
+mysql -u giaophan_gpv -p giaophan_giaophan < ./giaophan_vinh2015.sql
+?gpPq+c%UVGp
+
+Di chuyển toàn bộ site cũ vào thư mục: website_old đặt ở root site của nukeviet.
+
+Chạy tool nâng cấp.
+
+Di chuyển các file uploads của site cũ sang.
